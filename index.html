@@ -85,11 +85,11 @@
 
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="那一年的我">
+<meta property="og:title" content="那一年我十八岁">
 <meta property="og:url" content="http://yoursite.com/index.html">
-<meta property="og:site_name" content="那一年的我">
+<meta property="og:site_name" content="那一年我十八岁">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="那一年的我">
+<meta name="twitter:title" content="那一年我十八岁">
 
 
 
@@ -112,7 +112,7 @@
 
   <link rel="canonical" href="http://yoursite.com/"/>
 
-  <title> 那一年的我 </title>
+  <title> 那一年我十八岁 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -145,7 +145,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">那一年的我</span>
+      <span class="site-title">那一年我十八岁</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -291,7 +291,7 @@
 <p>由此我们得到，当误判发生时，表示Hash该元素后得到的K个位置都为1，由上公式我们得到误判率为：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fp = (<span class="number">1</span>-(<span class="number">1</span><span class="number">-1</span>/m)^kn)^k ~= (<span class="number">1</span> - e^(-kn/m))^k</div></pre></td></tr></table></figure></p>
 <p>不难看出，随着m的增加，误判的概率会下降，同时随着插入元素个数n的增加，误判的概率又会上升。<br>那么由上式(误判率公式)可以推导出m的公式，<a href="https://github.com/waruqi/tbox/wiki/%E5%88%A9%E7%94%A8bloom-filter%E7%AE%97%E6%B3%95%E5%A4%84%E7%90%86%E5%A4%A7%E8%A7%84%E6%A8%A1%E6%95%B0%E6%8D%AE%E8%BF%87%E6%BB%A4" target="_blank" rel="external">具体推导的方法点这里</a><br>公式如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">c = p^( <span class="number">1</span> / k)</div><div class="line">m = (<span class="number">2</span>k / (<span class="number">2</span>c + c * c)) * n</div></pre></td></tr></table></figure></p>
 <p><a href="http://pages.cs.wisc.edu/~cao/papers/summary-cache/node8.html" target="_blank" rel="external">这里有一个关于fp、m/n、k的一篇文章</a><br>可以看出： k = 4， fp &lt; 0.001 , m/n ~= 20</p>
-<h3 id="应该用什么样的Hash函数？"><a href="#应该用什么样的Hash函数？" class="headerlink" title="应该用什么样的Hash函数？"></a>应该用什么样的Hash函数？</h3><p>由于推导时，假设hash是等概率均匀分布在m个位数组上，且由于bloom filter需要k次hash，所以只需要<br>遵循简单和均匀即可这两个原则即可。</p>
+<h3 id="应该用什么样的Hash函数？"><a href="#应该用什么样的Hash函数？" class="headerlink" title="应该用什么样的Hash函数？"></a>应该用什么样的Hash函数？</h3><p>由于推导时，假设hash是等概率均匀分布在m个位数组上，且由于bloom filter需要k次hash，所以只需要<br>遵循简单和均匀这两个原则即可。</p>
 <p>这篇<a href="https://www.eecs.harvard.edu/~michaelm/postscripts/rsa2008.pdf" target="_blank" rel="external">论文</a>中提出，只需要两个独立的哈希函数hf1和hf2即可，也就是通过如下方式获得k个哈希函数值：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">hash value = hf1(key) + i*hf2(key)</div><div class="line"></div><div class="line">其中i=<span class="number">0</span>、<span class="number">1</span>、<span class="number">2</span>…k<span class="number">-1</span></div></pre></td></tr></table></figure></p>
 <p>据我测试，常见的字符串hash即可胜任。以下是一些hash函数的介绍和网址：<br><a href="http://www.cnblogs.com/uvsjoh/archive/2012/03/27/2420120.html" target="_blank" rel="external">[1]字符串哈希函数</a><br><a href="http://www.cnblogs.com/qianxun/archive/2011/07/03/2096773.html" target="_blank" rel="external">[2]Hash 函数的常用算法和应用领域</a><br><a href="http://blog.csdn.net/v_JULY_v/article/details/6256463" target="_blank" rel="external">[3]从头到尾解析Hash表算法</a><br><a href="http://xinklabi.iteye.com/blog/2195092" target="_blank" rel="external">[4]MurmurHash算法</a><br><a href="http://my.oschina.net/hnuweiwei/blog/224066" target="_blank" rel="external">[5]散列表(hash table)</a></p>
 <h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>其实代码很简单，主要是M的计算：<br>设：k 为hash次数，(1 &lt;&lt; probability) 为最大误判率，n为能容纳最大元素数<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">	<span class="keyword">double</span> p = <span class="number">1</span> / (<span class="keyword">double</span>)(<span class="number">1</span> &lt;&lt; probability);</div><div class="line">	<span class="keyword">double</span> c = <span class="built_in">pow</span>(p, <span class="number">1</span> / k);</div><div class="line">	<span class="keyword">double</span> s = (k + k) / (c + c + c * c);</div><div class="line">	<span class="keyword">uint64_t</span> m = <span class="built_in">floor</span>(s * n);</div><div class="line"><span class="meta">#<span class="meta-keyword">if</span> 0	</span></div><div class="line">	<span class="comment">//也可以使用,一组table存放先计算出s的值</span></div><div class="line">	<span class="comment">/*</span></div><div class="line">	int i = 0;</div><div class="line">	for (i = 1; i &lt; 16; i++)</div><div class="line">	&#123;</div><div class="line">		printf("\t&#123; ");</div><div class="line">		int j = 0;</div><div class="line">		for (j = 0; j &lt; 31; j++)</div><div class="line">		&#123;</div><div class="line">			double k = (double)i;</div><div class="line">			double p = 1. / (double)(1 &lt;&lt; j);</div><div class="line">			double c = pow(p, 1 / k);</div><div class="line">			double s = (k + k) / (c + c + c * c);</div><div class="line">			if (j != 30) </div><div class="line">				printf("%ld, ", s);</div><div class="line">			else </div><div class="line">				printf("%ld &#125;,\n", s);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	*/</div><div class="line">	<span class="keyword">static</span> <span class="keyword">double</span> s_scale[<span class="number">15</span>][<span class="number">31</span>] =</div><div class="line">	&#123;</div><div class="line">		...</div><div class="line">	&#125;;</div><div class="line"></div><div class="line">	<span class="comment">// m = (s * n)</span></div><div class="line">	<span class="keyword">uint64_t</span> m = s_scale[k - <span class="number">1</span>][probability], n);</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure></p>
@@ -501,13 +501,6 @@
 
           
 
-          
-            <div class="site-state-item site-state-tags">
-              <a href="/tags">
-                <span class="site-state-item-count">1</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
           
 
         </nav>
